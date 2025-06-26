@@ -1,11 +1,9 @@
-# 0x03-MessagingApp-Django/chats/middleware.py
-
 from datetime import datetime, time
 from django.http import HttpResponseForbidden
 import logging
 import os
 
-# Ensure log file is set
+# Log file path (adjusted to be in Django-Middleware-0x03 root)
 LOG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'requests.log')
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
 
