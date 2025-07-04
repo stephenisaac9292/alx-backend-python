@@ -1,4 +1,6 @@
-import seed  # as provided in the instruction
+#!/usr/bin/python3
+seed = __import__('seed')
+
 
 def paginate_users(page_size, offset):
     connection = seed.connect_to_prodev()
@@ -9,11 +11,11 @@ def paginate_users(page_size, offset):
     return rows
 
 
-def lazy_pagination(page_size):
+def lazy_paginate(page_size):
     offset = 0
-    while True:  # only one loop
+    while True:
         page = paginate_users(page_size, offset)
         if not page:
             break
-        yield page  # generator yielding one page at a time
+        yield page
         offset += page_size

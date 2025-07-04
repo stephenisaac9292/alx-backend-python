@@ -1,23 +1,39 @@
-import sqlite3
+import mysql.connector
+from mysql.connector import Error
 
 def stream_users_in_batches(batch_size):
-    conn = sqlite3.connect('user_data.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM user_data")
-
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='mysql',
+        password='admin',
+        database='ALX_prodev'
+    )
+    cursor = connection.cursor(dictionary=True)
+    offset = 0
     while True:
-        rows = cursor.fetchmany(batch_size)
+        cursor.execute("SELECT * FROM user_data LIMIT %s OFFSET %s", (batch_size, offset))
+        rows = cursor.fetchall()
         if not rows:
             break
-        yield [dict(row) for row in rows]  # ✅ YIELD used
-
+        for row in rows:
+            yield row
+        offset += batch_size
     cursor.close()
-    conn.close()
-
+    connection.close()
 
 def batch_processing(batch_size):
-    for batch in stream_users_in_batches(batch_size):  # 1st loop
-        for user in batch:                             # 2nd loop
-            if user["age"] > 25:
-                print(user)                            # ✅ Direct print, no return
+    for batch in stream_users_in_batches(batch_size):
+        filtered = [user for user in batch if user['age'] > 25]
+        for user in filtered:
+            print(f"User: {user['name']}, Age: {user['name']}")
+
+
+def main():
+    # Step 1: Choose a batch size
+    batch_size = 10
+
+    # Step 2: Stream and process users in batches
+    batch_processing(batch_size) # this triggers everything
+
+if __name__ == "__main__":
+    main()

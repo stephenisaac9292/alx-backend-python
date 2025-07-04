@@ -1,19 +1,22 @@
-import sqlite3
+import mysql.connector
+from mysql.connector import Error
 
-def stream_users():
-    # Connect to the SQLite database
-    conn = sqlite3.connect('user_data.db')
-    conn.row_factory = sqlite3.Row  # This allows access by column name
-    cursor = conn.cursor()
+def stream_users(connection):
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='mysql',
+            password='admin',
+            database='ALX_prodev'
+        )
+        cursor = connection.cursor(dictionationary=True)
+        cursor.execute("SELECT * FROM user_data")
 
-    # Execute a SELECT query
-    cursor.execute("SELECT * FROM user_data")
-
-    # Use a generator to yield one row at a time
-    for row in cursor:
-        # Convert the row to a dictionary
-        yield dict(row)
-
-    # Cleanup
-    cursor.close()
-    conn.close()
+        for row in cursor:
+            yield row
+    except Error as e:
+        print(f"Error: {e}")
+    finally:
+        if connection.is_connected()
+            cursor.close()
+            connection.close()
